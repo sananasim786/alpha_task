@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Music Player</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center mb-4"> Music Player</h1>
+    <div id="player" class="space-y-4">
+      <div class="text-center">
+        <p id="song-title" class="text-lg font-semibold">Select a song</p>
+        <p id="song-artist" class="text-sm text-gray-600">Artist</p>
+      </div>
+      <div class="flex justify-center space-x-4">
+        <button id="prev-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Previous</button>
+        <button id="play-pause-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Play</button>
+        <button id="next-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Next</button>
+      </div>
+      <input type="range" id="progress-bar" class="w-full" min="0" max="100" value="0">
+    </div>
+  </div>
+
+  <script>
+    const songs = [
+      {
+        title: "Sample Song 1",
+        artist: "Sana Nasim ",
+        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      },
+      {
+        title: "Sample Song 2",
+        artist: "Artist 2",
+        src: "path/to/tum-hi-ho.mp3"
+      }
+      
+    ];
+
+    let currentSongIndex = 0;
+    const audio = new Audio(songs[currentSongIndex].src);
+    const playPauseBtn = document.getElementById("play-pause-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const progressBar = document.getElementById("progress-bar");
+    const songTitle = document.getElementById("song-title");
+    const songArtist = document.getElementById("song-artist");
+
+    function updateSongInfo() {
+      songTitle.textContent = songs[currentSongIndex].title;
+      songArtist.textContent = songs[currentSongIndex].artist;
+      audio.src = songs[currentSongIndex].src;
+      progressBar.value = 0;
+      playPauseBtn.textContent = "Play";
+    }
+
+    function togglePlayPause() {
+      if (audio.paused) {
+        audio.play();
+        playPauseBtn.textContent = "Pause";
+      } else {
+        audio.pause();
+        playPauseBtn.textContent = "Play";
+      }
+    }
+
+    function playNext() {
+      currentSongIndex = (currentSongIndex + 1) % songs.length;
+      updateSongInfo();
+      audio.play();
+      playPauseBtn.textContent = "Pause";
+    }
+
+    function playPrevious() {
+      currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+      updateSongInfo();
+      audio.play();
+      playPauseBtn.textContent = "Pause";
+    }
+
+    audio.addEventListener("timeupdate", () => {
+      if (audio.duration) {
+        progressBar.value = (audio.currentTime / audio.duration) * 100;
+      }
+    });
+
+    audio.addEventListener("ended", playNext);
+
+    progressBar.addEventListener("input", () => {
+      if (audio.duration) {
+        audio.currentTime = (progressBar.value / 100) * audio.duration;
+      }
+    });
+
+    playPauseBtn.addEventListener("click", togglePlayPause);
+    nextBtn.addEventListener("click", playNext);
+    prevBtn.addEventListener("click", playPrevious);
+
+    updateSongInfo();
+  </script>
+</body>
+</html>
